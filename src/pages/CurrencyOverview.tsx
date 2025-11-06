@@ -231,12 +231,18 @@ export default function CurrencyOverview() {
               {paginatedTrades.map((trade) => {
                 const isExpanded = expandedTrades.has(trade.id);
                 const [baseCcy, quoteCcy] = trade.originalPair.split('/');
-                const sellAmount = trade.originalAmount < 0 
-                  ? `${Math.abs(trade.originalAmount).toLocaleString()} ${baseCcy}`
-                  : '-';
+                const rate = trade.usdLegs[0]?.rate || 1;
+                const baseAmount = Math.abs(trade.originalAmount);
+                const quoteAmount = baseAmount * rate;
+                
+                // Positive originalAmount = buying base, selling quote
+                // Negative originalAmount = selling base, buying quote
+                const sellAmount = trade.originalAmount > 0
+                  ? `${quoteAmount.toLocaleString()} ${quoteCcy}`
+                  : `${baseAmount.toLocaleString()} ${baseCcy}`;
                 const buyAmount = trade.originalAmount > 0
-                  ? `${trade.originalAmount.toLocaleString()} ${baseCcy}`
-                  : '-';
+                  ? `${baseAmount.toLocaleString()} ${baseCcy}`
+                  : `${quoteAmount.toLocaleString()} ${quoteCcy}`;
                 
                 return (
                   <>
