@@ -113,7 +113,7 @@ export default function PositionReset() {
                     <SelectContent>
                       {mockPositions.map(pos => (
                         <SelectItem key={pos.id} value={pos.id}>
-                          {pos.id} - {pos.currencyPair} ({pos.netPosition.toLocaleString()})
+                          {pos.id} - {pos.currency} ({pos.netPosition.toLocaleString()})
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -129,8 +129,8 @@ export default function PositionReset() {
                           <div className="font-semibold text-lg">{selectedPosition.netPosition.toLocaleString()}</div>
                         </div>
                         <div>
-                          <div className="text-muted-foreground">Currency Pair</div>
-                          <div className="font-semibold text-lg">{selectedPosition.currencyPair}</div>
+                          <div className="text-muted-foreground">Currency</div>
+                          <div className="font-semibold text-lg">{selectedPosition.currency}</div>
                         </div>
                         <div>
                           <div className="text-muted-foreground">Liquidity Provider</div>

@@ -33,7 +33,7 @@ export default function MTMValuation() {
   }, []);
 
   const getPositionsByPair = (pair: string) => {
-    return mockPositions.filter(pos => pos.currencyPair === pair);
+    return mockPositions.filter(pos => pos.currency === pair.split('/')[1] || pos.currency === pair.split('/')[0]);
   };
 
   return (

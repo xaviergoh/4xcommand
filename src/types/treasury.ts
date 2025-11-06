@@ -1,14 +1,30 @@
 export interface Position {
   id: string;
-  currencyPair: string;
+  currency: string;
   liquidityProvider: string;
   netPosition: number;
-  averageRate: number;
-  currentRate: number;
-  mtmValue: number;
+  currentRate: number; // USD rate from Reuters
+  mtmValue: number; // USD MTM value
   unrealizedPnL: number;
   realizedPnL: number;
   status: 'Open' | 'Closed' | 'Hedged';
+  trades: Trade[];
+}
+
+export interface Trade {
+  id: string;
+  tradeDate: string;
+  customerOrder: string;
+  originalPair: string; // e.g., "MYR/HKD"
+  originalAmount: number;
+  usdLegs: UsdLeg[];
+}
+
+export interface UsdLeg {
+  pair: string; // e.g., "USDMYR" or "USDHKD"
+  amount: number;
+  rate: number;
+  usdEquivalent: number;
 }
 
 export interface Hedge {

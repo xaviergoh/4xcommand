@@ -1,4 +1,4 @@
-import { Position, Hedge, ResetRequest, AuditEvent, MarketRate } from '@/types/treasury';
+import { Position, Hedge, ResetRequest, AuditEvent, MarketRate, Trade } from '@/types/treasury';
 
 export const mockMarketRates: MarketRate[] = [
   { pair: 'USD/SGD', bid: 1.3420, ask: 1.3425, mid: 1.3422, change: 0.0012, changePercent: 0.09, lastUpdate: new Date().toISOString() },
@@ -13,64 +13,154 @@ export const mockMarketRates: MarketRate[] = [
 export const mockPositions: Position[] = [
   {
     id: 'POS-0001',
-    currencyPair: 'USD/SGD',
+    currency: 'SGD',
     liquidityProvider: 'Citibank',
     netPosition: 2500000,
-    averageRate: 1.3380,
     currentRate: 1.3422,
-    mtmValue: 3355500,
+    mtmValue: 1862335,
     unrealizedPnL: 10500,
     realizedPnL: 5200,
     status: 'Open',
+    trades: [
+      {
+        id: 'TRD-0001',
+        tradeDate: new Date(Date.now() - 86400000).toISOString(),
+        customerOrder: 'CUST-001',
+        originalPair: 'USD/SGD',
+        originalAmount: 1500000,
+        usdLegs: [
+          { pair: 'USDSGD', amount: 1500000, rate: 1.3400, usdEquivalent: 1500000 }
+        ]
+      },
+      {
+        id: 'TRD-0002',
+        tradeDate: new Date(Date.now() - 172800000).toISOString(),
+        customerOrder: 'CUST-005',
+        originalPair: 'EUR/SGD',
+        originalAmount: 1000000,
+        usdLegs: [
+          { pair: 'EURUSD', amount: 1000000, rate: 1.0850, usdEquivalent: 1085000 },
+          { pair: 'USDSGD', amount: 1085000, rate: 1.3380, usdEquivalent: 1000000 }
+        ]
+      }
+    ]
   },
   {
     id: 'POS-0002',
-    currencyPair: 'EUR/USD',
+    currency: 'EUR',
     liquidityProvider: 'HSBC',
     netPosition: -1800000,
-    averageRate: 1.0920,
     currentRate: 1.0852,
     mtmValue: -1953360,
     unrealizedPnL: 12240,
     realizedPnL: -3500,
     status: 'Open',
+    trades: [
+      {
+        id: 'TRD-0003',
+        tradeDate: new Date(Date.now() - 259200000).toISOString(),
+        customerOrder: 'CUST-012',
+        originalPair: 'EUR/USD',
+        originalAmount: -1800000,
+        usdLegs: [
+          { pair: 'EURUSD', amount: -1800000, rate: 1.0920, usdEquivalent: -1965600 }
+        ]
+      }
+    ]
   },
   {
     id: 'POS-0003',
-    currencyPair: 'GBP/USD',
+    currency: 'GBP',
     liquidityProvider: 'Standard Chartered',
     netPosition: 1200000,
-    averageRate: 1.2650,
     currentRate: 1.2722,
     mtmValue: 1526640,
     unrealizedPnL: 8640,
     realizedPnL: 2100,
     status: 'Open',
+    trades: [
+      {
+        id: 'TRD-0004',
+        tradeDate: new Date(Date.now() - 345600000).toISOString(),
+        customerOrder: 'CUST-018',
+        originalPair: 'GBP/USD',
+        originalAmount: 1200000,
+        usdLegs: [
+          { pair: 'GBPUSD', amount: 1200000, rate: 1.2650, usdEquivalent: 1518000 }
+        ]
+      }
+    ]
   },
   {
     id: 'POS-0004',
-    currencyPair: 'AUD/USD',
+    currency: 'AUD',
     liquidityProvider: 'DBS',
     netPosition: -950000,
-    averageRate: 0.6620,
     currentRate: 0.6582,
     mtmValue: -625290,
     unrealizedPnL: 3610,
     realizedPnL: -1800,
     status: 'Open',
+    trades: [
+      {
+        id: 'TRD-0005',
+        tradeDate: new Date(Date.now() - 432000000).toISOString(),
+        customerOrder: 'CUST-024',
+        originalPair: 'AUD/USD',
+        originalAmount: -950000,
+        usdLegs: [
+          { pair: 'AUDUSD', amount: -950000, rate: 0.6620, usdEquivalent: -628900 }
+        ]
+      }
+    ]
   },
   {
     id: 'POS-0005',
-    currencyPair: 'USD/JPY',
+    currency: 'JPY',
     liquidityProvider: 'UOB',
     netPosition: 3200000,
-    averageRate: 148.80,
     currentRate: 149.27,
-    mtmValue: 477664000,
+    mtmValue: 21435,
     unrealizedPnL: 1504,
     realizedPnL: 8900,
     status: 'Open',
+    trades: [
+      {
+        id: 'TRD-0006',
+        tradeDate: new Date(Date.now() - 518400000).toISOString(),
+        customerOrder: 'CUST-031',
+        originalPair: 'USD/JPY',
+        originalAmount: 3200000,
+        usdLegs: [
+          { pair: 'USDJPY', amount: 3200000, rate: 148.80, usdEquivalent: 21505 }
+        ]
+      }
+    ]
   },
+  {
+    id: 'POS-0006',
+    currency: 'MYR',
+    liquidityProvider: 'Citibank',
+    netPosition: 4500000,
+    currentRate: 4.4650,
+    mtmValue: 1007826,
+    unrealizedPnL: 5200,
+    realizedPnL: 3100,
+    status: 'Open',
+    trades: [
+      {
+        id: 'TRD-0007',
+        tradeDate: new Date(Date.now() - 604800000).toISOString(),
+        customerOrder: 'CUST-042',
+        originalPair: 'MYR/HKD',
+        originalAmount: 4500000,
+        usdLegs: [
+          { pair: 'USDMYR', amount: 4500000, rate: 4.4500, usdEquivalent: 1011236 },
+          { pair: 'USDHKD', amount: -1011236, rate: 7.8200, usdEquivalent: -4500000 }
+        ]
+      }
+    ]
+  }
 ];
 
 export const mockHedges: Hedge[] = [
