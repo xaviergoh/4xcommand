@@ -260,15 +260,14 @@ export default function CurrencyOverview() {
                     {isExpanded && (
                       <TableRow key={`${trade.id}-details`}>
                         <TableCell colSpan={8} className="bg-muted/30 p-0">
-                          <div className="p-4 space-y-3">
-                            <h5 className="text-sm font-semibold text-muted-foreground">USD-Denominated Breakdown</h5>
+                          <div className="p-4">
                             <Table>
                               <TableHeader>
                                 <TableRow>
                                   <TableHead>Currency Pair</TableHead>
                                   <TableHead>Rate</TableHead>
-                                  <TableHead>Base Currency Position</TableHead>
-                                  <TableHead>Quote Currency Position</TableHead>
+                                  <TableHead>{trade.usdLegs[0] ? (trade.usdLegs[0].pair.startsWith('USD') ? 'USD' : trade.usdLegs[0].pair.substring(0, 3)) : 'Base'} Position</TableHead>
+                                  <TableHead>{trade.usdLegs[0] ? (trade.usdLegs[0].pair.startsWith('USD') ? trade.usdLegs[0].pair.substring(3) : 'USD') : 'Quote'} Position</TableHead>
                                 </TableRow>
                               </TableHeader>
                               <TableBody>
@@ -287,10 +286,10 @@ export default function CurrencyOverview() {
                                       <TableCell className="font-medium">{leg.pair}</TableCell>
                                       <TableCell className="font-mono">{leg.rate.toFixed(4)}</TableCell>
                                       <TableCell className={basePosition >= 0 ? 'text-green-600' : 'text-red-600'}>
-                                        {base}: {basePosition >= 0 ? '+' : ''}{formatCurrency(basePosition)}
+                                        {basePosition >= 0 ? '+' : ''}{formatCurrency(basePosition)}
                                       </TableCell>
                                       <TableCell className={quotePosition >= 0 ? 'text-green-600' : 'text-red-600'}>
-                                        {quote}: {quotePosition >= 0 ? '+' : ''}{formatCurrency(quotePosition)}
+                                        {quotePosition >= 0 ? '+' : ''}{formatCurrency(quotePosition)}
                                       </TableCell>
                                     </TableRow>
                                   );
