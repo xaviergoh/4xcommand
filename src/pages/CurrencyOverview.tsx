@@ -297,15 +297,15 @@ export default function CurrencyOverview() {
                                   const quotePosition = -(leg.amount * leg.rate);
                                   
                                   const baseLabel = basePosition > 0 
-                                    ? `Long ${formatCurrency(Math.abs(basePosition))}`
+                                    ? `+${formatCurrency(basePosition)}`
                                     : basePosition < 0
-                                    ? `Short ${formatCurrency(Math.abs(basePosition))}`
+                                    ? `-${formatCurrency(Math.abs(basePosition))}`
                                     : formatCurrency(0);
                                     
                                   const quoteLabel = quotePosition > 0
-                                    ? `Long ${formatCurrency(Math.abs(quotePosition))}`
+                                    ? `+${formatCurrency(quotePosition)}`
                                     : quotePosition < 0
-                                    ? `Short ${formatCurrency(Math.abs(quotePosition))}`
+                                    ? `-${formatCurrency(Math.abs(quotePosition))}`
                                     : formatCurrency(0);
 
                                   return (
