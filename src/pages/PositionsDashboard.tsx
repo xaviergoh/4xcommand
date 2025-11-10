@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { mockPositions } from "@/data/mockData";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { TrendingUp, TrendingDown, DollarSign, Activity } from "lucide-react";
 
 type CurrencyDisplay = 'USD' | 'SGD';
@@ -15,6 +14,21 @@ export default function PositionsDashboard() {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
   const SGD_RATE = 1.3422;
+
+  const currencyToFlag: Record<string, string> = {
+    'EUR': '🇪🇺',
+    'USD': '🇺🇸',
+    'GBP': '🇬🇧',
+    'JPY': '🇯🇵',
+    'AUD': '🇦🇺',
+    'CAD': '🇨🇦',
+    'CHF': '🇨🇭',
+    'HKD': '🇭🇰',
+    'SGD': '🇸🇬',
+    'THB': '🇹🇭',
+    'MYR': '🇲🇾',
+    'INR': '🇮🇳'
+  };
 
   const convertToDisplayCurrency = (usdAmount: number) => {
     return currency === 'SGD' ? usdAmount * SGD_RATE : usdAmount;
@@ -177,23 +191,15 @@ export default function PositionsDashboard() {
           {sortedPositions.map((position) => (
             <Card 
               key={position.id}
-              className="cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02] border-2"
+              className="cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02] border-2 hover:border-primary"
               onClick={() => navigate(`/positions/${position.currency}`)}
             >
               <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                      <span className="text-xl font-bold text-primary">{position.currency}</span>
-                    </div>
-                    <div>
-                      <CardTitle className="text-2xl">{position.currency}</CardTitle>
-                      <p className="text-xs text-muted-foreground">Click for details</p>
-                    </div>
+                <div className="flex items-center gap-3">
+                  <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center text-3xl">
+                    {currencyToFlag[position.currency]}
                   </div>
-                  <Badge variant={position.status === 'Open' ? 'default' : 'secondary'}>
-                    {position.status}
-                  </Badge>
+                  <CardTitle className="text-2xl">{position.currency}</CardTitle>
                 </div>
               </CardHeader>
               <CardContent className="space-y-3">
