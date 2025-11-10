@@ -12,14 +12,14 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 
-const operationsItems = [
+const overviewItems = [
   { title: "Positions Dashboard", url: "/", icon: LayoutDashboard },
   { title: "MTM Valuation", url: "/mtm", icon: TrendingUp },
-  { title: "Manual Hedge Entry", url: "/hedge", icon: Shield },
 ];
 
 const adminItems = [
   { title: "Direct Trading Config", url: "/admin/direct-trading", icon: Settings },
+  { title: "Manual Hedge Entry", url: "/hedge", icon: Shield },
   { title: "Position Reset", url: "/reset", icon: RotateCcw },
   { title: "Audit Trail", url: "/audit", icon: FileText },
 ];
@@ -32,10 +32,10 @@ export function AppSidebar() {
     <Sidebar collapsible="icon" className="border-r">
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Operations</SidebarGroupLabel>
+          <SidebarGroupLabel>Overview</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {operationsItems.map((item) => (
+              {overviewItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild tooltip={item.title}>
                     <NavLink to={item.url} end className={({ isActive }) =>
