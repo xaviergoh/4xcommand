@@ -126,13 +126,22 @@ export const mockMarketRates: MarketRate[] = [
   { pair: 'GBP/USD', bid: 1.2720, ask: 1.2725, mid: 1.2722, change: 0.0045, changePercent: 0.35, lastUpdate: new Date().toISOString() },
   { pair: 'AUD/USD', bid: 0.6580, ask: 0.6585, mid: 0.6582, change: -0.0008, changePercent: -0.12, lastUpdate: new Date().toISOString() },
   { pair: 'USD/JPY', bid: 149.25, ask: 149.30, mid: 149.27, change: 0.35, changePercent: 0.23, lastUpdate: new Date().toISOString() },
+  { pair: 'USD/CAD', bid: 1.3580, ask: 1.3585, mid: 1.3582, change: 0.0018, changePercent: 0.13, lastUpdate: new Date().toISOString() },
+  { pair: 'USD/CHF', bid: 0.8720, ask: 0.8725, mid: 0.8722, change: -0.0012, changePercent: -0.14, lastUpdate: new Date().toISOString() },
+  { pair: 'NZD/USD', bid: 0.5980, ask: 0.5985, mid: 0.5982, change: 0.0015, changePercent: 0.25, lastUpdate: new Date().toISOString() },
   { pair: 'USD/MYR', bid: 4.4625, ask: 4.4675, mid: 4.4650, change: 0.0025, changePercent: 0.06, lastUpdate: new Date().toISOString() },
   { pair: 'USD/HKD', bid: 7.8185, ask: 7.8215, mid: 7.8200, change: -0.0015, changePercent: -0.02, lastUpdate: new Date().toISOString() },
   { pair: 'USD/CNH', bid: 7.2425, ask: 7.2475, mid: 7.2450, change: 0.0050, changePercent: 0.07, lastUpdate: new Date().toISOString() },
   { pair: 'EUR/SGD', bid: 1.4560, ask: 1.4565, mid: 1.4562, change: 0.0015, changePercent: 0.10, lastUpdate: new Date().toISOString() },
+  { pair: 'EUR/GBP', bid: 0.8525, ask: 0.8530, mid: 0.8527, change: -0.0008, changePercent: -0.09, lastUpdate: new Date().toISOString() },
+  { pair: 'EUR/JPY', bid: 162.05, ask: 162.15, mid: 162.10, change: 0.48, changePercent: 0.30, lastUpdate: new Date().toISOString() },
+  { pair: 'GBP/JPY', bid: 190.10, ask: 190.20, mid: 190.15, change: 0.65, changePercent: 0.34, lastUpdate: new Date().toISOString() },
   { pair: 'JPY/SGD', bid: 0.00898, ask: 0.00902, mid: 0.00900, change: 0.00003, changePercent: 0.33, lastUpdate: new Date().toISOString() },
   { pair: 'AUD/SGD', bid: 0.8828, ask: 0.8836, mid: 0.8832, change: -0.0012, changePercent: -0.14, lastUpdate: new Date().toISOString() },
   { pair: 'GBP/SGD', bid: 1.7080, ask: 1.7085, mid: 1.7082, change: 0.0062, changePercent: 0.36, lastUpdate: new Date().toISOString() },
+  { pair: 'CAD/SGD', bid: 0.9882, ask: 0.9890, mid: 0.9886, change: 0.0005, changePercent: 0.05, lastUpdate: new Date().toISOString() },
+  { pair: 'CHF/SGD', bid: 1.5385, ask: 1.5392, mid: 1.5388, change: 0.0022, changePercent: 0.14, lastUpdate: new Date().toISOString() },
+  { pair: 'NZD/SGD', bid: 0.8025, ask: 0.8032, mid: 0.8028, change: -0.0008, changePercent: -0.10, lastUpdate: new Date().toISOString() },
 ];
 
 // ============================================================================
@@ -211,10 +220,46 @@ export const mockPositions: Position[] = [
         tradeDate: new Date(Date.now() - 432000000).toISOString(),
         customerOrder: 'CUST-061',
         originalPair: 'GBP/SGD',
-        originalAmount: -300000, // Selling 300K GBP (negative)
+        originalAmount: 300000, // Buying 300K GBP (from SGD perspective, selling SGD)
         isExoticPair: false,
         usdLegs: [
-          { pair: 'GBPSGD', amount: -300000, rate: 1.7082, usdEquivalent: -512460 }
+          { pair: 'GBPSGD', amount: 300000, rate: 1.7082, usdEquivalent: 512460 }
+        ]
+      },
+      // CAD/SGD - Direct pair (G10xG10)
+      {
+        id: 'TRD-0020',
+        tradeDate: new Date(Date.now() - 1382400000).toISOString(),
+        customerOrder: 'CUST-168',
+        originalPair: 'CAD/SGD',
+        originalAmount: -800000, // Selling CAD (from SGD perspective, buying SGD)
+        isExoticPair: false,
+        usdLegs: [
+          { pair: 'CADSGD', amount: -800000, rate: 0.9880, usdEquivalent: -790400 }
+        ]
+      },
+      // CHF/SGD - Direct pair (G10xG10)
+      {
+        id: 'TRD-0023',
+        tradeDate: new Date(Date.now() - 1641600000).toISOString(),
+        customerOrder: 'CUST-201',
+        originalPair: 'CHF/SGD',
+        originalAmount: 250000, // Buying CHF (from SGD perspective, selling SGD)
+        isExoticPair: false,
+        usdLegs: [
+          { pair: 'CHFSGD', amount: 250000, rate: 1.5380, usdEquivalent: 384500 }
+        ]
+      },
+      // NZD/SGD - Direct pair (G10xG10)
+      {
+        id: 'TRD-0025',
+        tradeDate: new Date(Date.now() - 1814400000).toISOString(),
+        customerOrder: 'CUST-228',
+        originalPair: 'NZD/SGD',
+        originalAmount: -400000, // Selling NZD (from SGD perspective, buying SGD)
+        isExoticPair: false,
+        usdLegs: [
+          { pair: 'NZDSGD', amount: -400000, rate: 0.8020, usdEquivalent: -320800 }
         ]
       },
       // CNH/SGD - Exotic pair (non-G10 requires USD routing)
@@ -238,11 +283,11 @@ export const mockPositions: Position[] = [
     id: 'POS-0002',
     currency: 'EUR',
     liquidityProvider: 'HSBC',
-    netPosition: -1800000,
+    netPosition: -500000,
     currentRate: 1.0852,
-    mtmValue: -1953360,
-    unrealizedPnL: 12240,
-    realizedPnL: -3500,
+    mtmValue: -542600,
+    unrealizedPnL: 8200,
+    realizedPnL: -2100,
     status: 'Open',
     trades: [
       {
@@ -254,6 +299,40 @@ export const mockPositions: Position[] = [
         usdLegs: [
           { pair: 'EURUSD', amount: -1800000, rate: 1.0920, usdEquivalent: -1965600 }
         ]
+      },
+      // EUR/SGD cross-currency trade (also in SGD position)
+      {
+        id: 'TRD-0002',
+        tradeDate: new Date(Date.now() - 172800000).toISOString(),
+        customerOrder: 'CUST-005',
+        originalPair: 'EUR/SGD',
+        originalAmount: 1000000,
+        isExoticPair: false,
+        usdLegs: [
+          { pair: 'EURSGD', amount: 1000000, rate: 1.4580, usdEquivalent: 1456200 }
+        ]
+      },
+      {
+        id: 'TRD-0012',
+        tradeDate: new Date(Date.now() - 691200000).toISOString(),
+        customerOrder: 'CUST-082',
+        originalPair: 'EUR/GBP',
+        originalAmount: 800000,
+        isExoticPair: false,
+        usdLegs: [
+          { pair: 'EURGBP', amount: 800000, rate: 0.8520, usdEquivalent: 681600 }
+        ]
+      },
+      {
+        id: 'TRD-0013',
+        tradeDate: new Date(Date.now() - 777600000).toISOString(),
+        customerOrder: 'CUST-095',
+        originalPair: 'EUR/JPY',
+        originalAmount: -500000,
+        isExoticPair: false,
+        usdLegs: [
+          { pair: 'EURJPY', amount: -500000, rate: 161.80, usdEquivalent: -80900000 }
+        ]
       }
     ]
   },
@@ -261,11 +340,11 @@ export const mockPositions: Position[] = [
     id: 'POS-0003',
     currency: 'GBP',
     liquidityProvider: 'Standard Chartered',
-    netPosition: 1200000,
+    netPosition: 700000,
     currentRate: 1.2722,
-    mtmValue: 1526640,
-    unrealizedPnL: 8640,
-    realizedPnL: 2100,
+    mtmValue: 890540,
+    unrealizedPnL: 6100,
+    realizedPnL: 3400,
     status: 'Open',
     trades: [
       {
@@ -276,6 +355,41 @@ export const mockPositions: Position[] = [
         originalAmount: 1200000,
         usdLegs: [
           { pair: 'GBPUSD', amount: 1200000, rate: 1.2650, usdEquivalent: 1518000 }
+        ]
+      },
+      // GBP/SGD cross-currency trade (also in SGD position)
+      {
+        id: 'TRD-0010',
+        tradeDate: new Date(Date.now() - 432000000).toISOString(),
+        customerOrder: 'CUST-061',
+        originalPair: 'GBP/SGD',
+        originalAmount: -300000,
+        isExoticPair: false,
+        usdLegs: [
+          { pair: 'GBPSGD', amount: -300000, rate: 1.7082, usdEquivalent: -512460 }
+        ]
+      },
+      // EUR/GBP cross-currency trade (also in EUR position)
+      {
+        id: 'TRD-0012',
+        tradeDate: new Date(Date.now() - 691200000).toISOString(),
+        customerOrder: 'CUST-082',
+        originalPair: 'EUR/GBP',
+        originalAmount: -800000, // Selling 800K EUR, buying GBP
+        isExoticPair: false,
+        usdLegs: [
+          { pair: 'EURGBP', amount: -800000, rate: 0.8520, usdEquivalent: -681600 }
+        ]
+      },
+      {
+        id: 'TRD-0014',
+        tradeDate: new Date(Date.now() - 864000000).toISOString(),
+        customerOrder: 'CUST-103',
+        originalPair: 'GBP/JPY',
+        originalAmount: 600000,
+        isExoticPair: false,
+        usdLegs: [
+          { pair: 'GBPJPY', amount: 600000, rate: 189.50, usdEquivalent: 113700000 }
         ]
       }
     ]
@@ -320,11 +434,11 @@ export const mockPositions: Position[] = [
     id: 'POS-0005',
     currency: 'JPY',
     liquidityProvider: 'UOB',
-    netPosition: -11800000, // Negative from JPY/SGD exotic trade
+    netPosition: -92300000,
     currentRate: 149.27,
-    mtmValue: -79034,
-    unrealizedPnL: -1204,
-    realizedPnL: 2100,
+    mtmValue: -618300,
+    unrealizedPnL: -4800,
+    realizedPnL: 3200,
     status: 'Open',
     trades: [
       {
@@ -338,16 +452,51 @@ export const mockPositions: Position[] = [
           { pair: 'USDJPY', amount: 3200000, rate: 148.80, usdEquivalent: 21505, legType: 'Buy Leg' }
         ]
       },
-      // Corresponding JPY/SGD trade - Direct pair (G10xG10)
+      // JPY/SGD cross-currency trade (also in SGD position)
       {
-        id: 'TRD-0008-JPY',
+        id: 'TRD-0008',
         tradeDate: new Date(Date.now() - 259200000).toISOString(),
         customerOrder: 'CUST-048',
         originalPair: 'JPY/SGD',
-        originalAmount: -15000000, // Selling 15M JPY
+        originalAmount: -15000000,
         isExoticPair: false,
         usdLegs: [
           { pair: 'JPYSGD', amount: -15000000, rate: 0.00900, usdEquivalent: -135000 }
+        ]
+      },
+      // EUR/JPY cross-currency trade (also in EUR position)
+      {
+        id: 'TRD-0013',
+        tradeDate: new Date(Date.now() - 777600000).toISOString(),
+        customerOrder: 'CUST-095',
+        originalPair: 'EUR/JPY',
+        originalAmount: 80900000, // Buying JPY
+        isExoticPair: false,
+        usdLegs: [
+          { pair: 'EURJPY', amount: 80900000, rate: 161.80, usdEquivalent: 500000 }
+        ]
+      },
+      // GBP/JPY cross-currency trade (also in GBP position)
+      {
+        id: 'TRD-0014',
+        tradeDate: new Date(Date.now() - 864000000).toISOString(),
+        customerOrder: 'CUST-103',
+        originalPair: 'GBP/JPY',
+        originalAmount: -113700000, // Selling JPY
+        isExoticPair: false,
+        usdLegs: [
+          { pair: 'GBPJPY', amount: -113700000, rate: 189.50, usdEquivalent: -600000 }
+        ]
+      },
+      {
+        id: 'TRD-0015',
+        tradeDate: new Date(Date.now() - 950400000).toISOString(),
+        customerOrder: 'CUST-118',
+        originalPair: 'USD/JPY',
+        originalAmount: 52500000,
+        isExoticPair: false,
+        usdLegs: [
+          { pair: 'USDJPY', amount: 52500000, rate: 148.50, usdEquivalent: 353535 }
         ]
       }
     ]
@@ -356,11 +505,11 @@ export const mockPositions: Position[] = [
     id: 'POS-0006',
     currency: 'MYR',
     liquidityProvider: 'Citibank',
-    netPosition: 4500000,
+    netPosition: 9200000,
     currentRate: 4.4650,
-    mtmValue: 1007826,
-    unrealizedPnL: 5200,
-    realizedPnL: 3100,
+    mtmValue: 2061033,
+    unrealizedPnL: 8500,
+    realizedPnL: 4200,
     status: 'Open',
     trades: [
       {
@@ -376,33 +525,247 @@ export const mockPositions: Position[] = [
           { pair: 'USDMYR', amount: 4500000, rate: 4.4500, usdEquivalent: 1011236, legType: 'Buy Leg' },
           { pair: 'USDHKD', amount: -1011236, rate: 7.8200, usdEquivalent: -1011236, legType: 'Sell Leg' }
         ]
+      },
+      {
+        id: 'TRD-0016',
+        tradeDate: new Date(Date.now() - 1036800000).toISOString(),
+        customerOrder: 'CUST-126',
+        originalPair: 'USD/MYR',
+        originalAmount: 2500000,
+        isExoticPair: false,
+        usdLegs: [
+          { pair: 'USDMYR', amount: 2500000, rate: 4.4400, usdEquivalent: 562838 }
+        ]
+      },
+      {
+        id: 'TRD-0017',
+        tradeDate: new Date(Date.now() - 1123200000).toISOString(),
+        customerOrder: 'CUST-134',
+        originalPair: 'MYR/HKD',
+        originalAmount: 2200000,
+        isExoticPair: true,
+        decompositionReason: 'Exotic pair - USD routing required',
+        netUsdExposure: 494382,
+        usdLegs: [
+          { pair: 'USDMYR', amount: 2200000, rate: 4.4500, usdEquivalent: 494382, legType: 'Buy Leg' },
+          { pair: 'USDHKD', amount: -494382, rate: 7.8200, usdEquivalent: -494382, legType: 'Sell Leg' }
+        ]
       }
     ]
   },
-  // CNH position from exotic CNH/SGD trade
   {
     id: 'POS-0007',
     currency: 'CNH',
     liquidityProvider: 'HSBC',
-    netPosition: -3000000, // Negative from selling CNH
+    netPosition: -5200000,
     currentRate: 7.2450,
-    mtmValue: -414079,
-    unrealizedPnL: -2100,
-    realizedPnL: 1200,
+    mtmValue: -717838,
+    unrealizedPnL: -3800,
+    realizedPnL: 1900,
     status: 'Open',
     trades: [
       {
-        id: 'TRD-0011-CNH',
+        id: 'TRD-0011',
         tradeDate: new Date(Date.now() - 518400000).toISOString(),
         customerOrder: 'CUST-073',
         originalPair: 'CNH/SGD',
-        originalAmount: -3000000, // Selling 3M CNH
+        originalAmount: -3000000,
         isExoticPair: true,
         decompositionReason: 'Exotic pair - USD routing required',
         netUsdExposure: -414079,
         usdLegs: [
           { pair: 'USDCNH', amount: -3000000, rate: 7.2450, usdEquivalent: -414079, legType: 'Sell Leg' },
           { pair: 'USDSGD', amount: 414079, rate: 1.3400, usdEquivalent: 414079, legType: 'Buy Leg' }
+        ]
+      },
+      {
+        id: 'TRD-0018',
+        tradeDate: new Date(Date.now() - 1209600000).toISOString(),
+        customerOrder: 'CUST-145',
+        originalPair: 'USD/CNH',
+        originalAmount: -2200000,
+        isExoticPair: false,
+        usdLegs: [
+          { pair: 'USDCNH', amount: -2200000, rate: 7.2200, usdEquivalent: -304709 }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'POS-0008',
+    currency: 'CAD',
+    liquidityProvider: 'RBC',
+    netPosition: 2100000,
+    currentRate: 1.3582,
+    mtmValue: 1546122,
+    unrealizedPnL: 5800,
+    realizedPnL: 2900,
+    status: 'Open',
+    trades: [
+      {
+        id: 'TRD-0019',
+        tradeDate: new Date(Date.now() - 1296000000).toISOString(),
+        customerOrder: 'CUST-152',
+        originalPair: 'USD/CAD',
+        originalAmount: 1500000,
+        isExoticPair: false,
+        usdLegs: [
+          { pair: 'USDCAD', amount: 1500000, rate: 1.3550, usdEquivalent: 1106940 }
+        ]
+      },
+      {
+        id: 'TRD-0020',
+        tradeDate: new Date(Date.now() - 1382400000).toISOString(),
+        customerOrder: 'CUST-168',
+        originalPair: 'CAD/SGD',
+        originalAmount: 800000,
+        isExoticPair: false,
+        usdLegs: [
+          { pair: 'CADSGD', amount: 800000, rate: 0.9880, usdEquivalent: 790400 }
+        ]
+      },
+      {
+        id: 'TRD-0021',
+        tradeDate: new Date(Date.now() - 1468800000).toISOString(),
+        customerOrder: 'CUST-179',
+        originalPair: 'USD/CAD',
+        originalAmount: -200000,
+        isExoticPair: false,
+        usdLegs: [
+          { pair: 'USDCAD', amount: -200000, rate: 1.3600, usdEquivalent: -147059 }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'POS-0009',
+    currency: 'CHF',
+    liquidityProvider: 'UBS',
+    netPosition: -850000,
+    currentRate: 0.8722,
+    mtmValue: -974370,
+    unrealizedPnL: 3200,
+    realizedPnL: -1800,
+    status: 'Open',
+    trades: [
+      {
+        id: 'TRD-0022',
+        tradeDate: new Date(Date.now() - 1555200000).toISOString(),
+        customerOrder: 'CUST-187',
+        originalPair: 'USD/CHF',
+        originalAmount: -600000,
+        isExoticPair: false,
+        usdLegs: [
+          { pair: 'USDCHF', amount: -600000, rate: 0.8750, usdEquivalent: -685714 }
+        ]
+      },
+      {
+        id: 'TRD-0023',
+        tradeDate: new Date(Date.now() - 1641600000).toISOString(),
+        customerOrder: 'CUST-201',
+        originalPair: 'CHF/SGD',
+        originalAmount: -250000,
+        isExoticPair: false,
+        usdLegs: [
+          { pair: 'CHFSGD', amount: -250000, rate: 1.5380, usdEquivalent: -384500 }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'POS-0010',
+    currency: 'NZD',
+    liquidityProvider: 'ANZ',
+    netPosition: 980000,
+    currentRate: 0.5982,
+    mtmValue: 586236,
+    unrealizedPnL: 4100,
+    realizedPnL: 2200,
+    status: 'Open',
+    trades: [
+      {
+        id: 'TRD-0024',
+        tradeDate: new Date(Date.now() - 1728000000).toISOString(),
+        customerOrder: 'CUST-215',
+        originalPair: 'NZD/USD',
+        originalAmount: 1200000,
+        isExoticPair: false,
+        usdLegs: [
+          { pair: 'NZDUSD', amount: 1200000, rate: 0.5950, usdEquivalent: 714000 }
+        ]
+      },
+      {
+        id: 'TRD-0025',
+        tradeDate: new Date(Date.now() - 1814400000).toISOString(),
+        customerOrder: 'CUST-228',
+        originalPair: 'NZD/SGD',
+        originalAmount: 400000,
+        isExoticPair: false,
+        usdLegs: [
+          { pair: 'NZDSGD', amount: 400000, rate: 0.8020, usdEquivalent: 320800 }
+        ]
+      },
+      {
+        id: 'TRD-0026',
+        tradeDate: new Date(Date.now() - 1900800000).toISOString(),
+        customerOrder: 'CUST-241',
+        originalPair: 'NZD/USD',
+        originalAmount: -620000,
+        isExoticPair: false,
+        usdLegs: [
+          { pair: 'NZDUSD', amount: -620000, rate: 0.6000, usdEquivalent: -372000 }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'POS-0011',
+    currency: 'HKD',
+    liquidityProvider: 'Bank of China HK',
+    netPosition: -12500000,
+    currentRate: 7.8200,
+    mtmValue: -1598465,
+    unrealizedPnL: -6200,
+    realizedPnL: 3100,
+    status: 'Open',
+    trades: [
+      {
+        id: 'TRD-0007',
+        tradeDate: new Date(Date.now() - 604800000).toISOString(),
+        customerOrder: 'CUST-042',
+        originalPair: 'MYR/HKD',
+        originalAmount: -7910026, // Selling HKD
+        isExoticPair: true,
+        decompositionReason: 'Exotic pair - USD routing required',
+        netUsdExposure: -1011236,
+        usdLegs: [
+          { pair: 'USDMYR', amount: 4500000, rate: 4.4500, usdEquivalent: 1011236, legType: 'Buy Leg' },
+          { pair: 'USDHKD', amount: -7910026, rate: 7.8200, usdEquivalent: -1011236, legType: 'Sell Leg' }
+        ]
+      },
+      {
+        id: 'TRD-0017',
+        tradeDate: new Date(Date.now() - 1123200000).toISOString(),
+        customerOrder: 'CUST-134',
+        originalPair: 'MYR/HKD',
+        originalAmount: -3866467, // Selling HKD
+        isExoticPair: true,
+        decompositionReason: 'Exotic pair - USD routing required',
+        netUsdExposure: -494382,
+        usdLegs: [
+          { pair: 'USDMYR', amount: 2200000, rate: 4.4500, usdEquivalent: 494382, legType: 'Buy Leg' },
+          { pair: 'USDHKD', amount: -3866467, rate: 7.8200, usdEquivalent: -494382, legType: 'Sell Leg' }
+        ]
+      },
+      {
+        id: 'TRD-0027',
+        tradeDate: new Date(Date.now() - 1987200000).toISOString(),
+        customerOrder: 'CUST-256',
+        originalPair: 'USD/HKD',
+        originalAmount: -723507,
+        isExoticPair: false,
+        usdLegs: [
+          { pair: 'USDHKD', amount: -723507, rate: 7.8100, usdEquivalent: -92649 }
         ]
       }
     ]
