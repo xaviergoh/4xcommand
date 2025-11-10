@@ -1,6 +1,5 @@
 import { CurrencyPairStatus } from '@/types/treasury';
 import { Badge } from '@/components/ui/badge';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { normalizePair } from '@/data/mockData';
 
 interface CurrencyPairMatrixProps {
@@ -115,53 +114,34 @@ export const CurrencyPairMatrix = ({
                     const isClickable = base !== quote && onPairToggle;
                     
                     return (
-                      <TooltipProvider key={`${base}-${quote}`} delayDuration={200}>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <td
-                              onClick={() => handleCellClick(base, quote)}
-                              className={`px-3 py-2 text-center text-xs transition-all ${
-                                base === quote
-                                  ? 'bg-muted cursor-not-allowed'
-                                  : status.isDirect
-                                  ? 'bg-direct/10 hover:bg-direct/20 cursor-pointer border-direct/30'
-                                  : 'bg-exotic/10 hover:bg-exotic/20 cursor-pointer border-exotic/30'
-                              } ${highlightChanges ? 'animate-pulse' : ''} ${
-                                isModified ? 'ring-2 ring-primary ring-offset-1 ring-offset-background' : ''
-                              } ${isClickable ? 'active:scale-95' : ''}`}
-                            >
-                              {base === quote ? (
-                                <span className="text-muted-foreground">—</span>
-                              ) : (
-                                <Badge
-                                  variant={status.isDirect ? 'default' : 'secondary'}
-                                  className={`${
-                                    status.isDirect
-                                      ? 'bg-direct text-direct-foreground hover:bg-direct/80'
-                                      : 'bg-exotic text-exotic-foreground hover:bg-exotic/80'
-                                  } ${isModified ? 'ring-1 ring-primary' : ''}`}
-                                >
-                                  {status.isDirect ? 'Direct' : 'Exotic'}
-                                </Badge>
-                              )}
-                            </td>
-                          </TooltipTrigger>
-                          <TooltipContent side="top" className="max-w-xs">
-                            <div className="space-y-1">
-                              <p className="font-semibold">
-                                {base}/{quote}
-                              </p>
-                              <p className="text-xs text-muted-foreground">{status.reason}</p>
-                              {isModified && (
-                                <p className="text-xs text-primary font-semibold mt-1">● Unsaved change</p>
-                              )}
-                              {onPairToggle && base !== quote && (
-                                <p className="text-xs text-muted-foreground mt-1">Click to toggle routing</p>
-                              )}
-                            </div>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
+                      <td
+                        key={`${base}-${quote}`}
+                        onClick={() => handleCellClick(base, quote)}
+                        className={`px-3 py-2 text-center text-xs transition-all ${
+                          base === quote
+                            ? 'bg-muted cursor-not-allowed'
+                            : status.isDirect
+                            ? 'bg-direct/10 hover:bg-direct/20 cursor-pointer border-direct/30'
+                            : 'bg-exotic/10 hover:bg-exotic/20 cursor-pointer border-exotic/30'
+                        } ${highlightChanges ? 'animate-pulse' : ''} ${
+                          isModified ? 'ring-2 ring-primary ring-offset-1 ring-offset-background' : ''
+                        } ${isClickable ? 'active:scale-95' : ''}`}
+                      >
+                        {base === quote ? (
+                          <span className="text-muted-foreground">—</span>
+                        ) : (
+                          <Badge
+                            variant={status.isDirect ? 'default' : 'secondary'}
+                            className={`${
+                              status.isDirect
+                                ? 'bg-direct text-direct-foreground hover:bg-direct/80'
+                                : 'bg-exotic text-exotic-foreground hover:bg-exotic/80'
+                            } ${isModified ? 'ring-1 ring-primary' : ''}`}
+                          >
+                            {status.isDirect ? 'Direct' : 'Exotic'}
+                          </Badge>
+                        )}
+                      </td>
                     );
                   })}
                 </tr>
