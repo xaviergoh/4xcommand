@@ -18,6 +18,9 @@ export interface Trade {
   originalPair: string; // e.g., "MYR/HKD"
   originalAmount: number;
   usdLegs: UsdLeg[];
+  isExoticPair?: boolean; // true if neither currency in the pair is USD
+  decompositionReason?: string; // explanation for USD routing
+  netUsdExposure?: number; // intermediate USD amount created/consumed
 }
 
 export interface UsdLeg {
@@ -25,6 +28,7 @@ export interface UsdLeg {
   amount: number;
   rate: number;
   usdEquivalent: number;
+  legType?: 'Buy Leg' | 'Sell Leg'; // clarifies direction for exotic pair decomposition
 }
 
 export interface Hedge {

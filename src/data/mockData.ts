@@ -10,6 +10,16 @@ export const mockMarketRates: MarketRate[] = [
   { pair: 'GBP/SGD', bid: 1.7080, ask: 1.7085, mid: 1.7082, change: 0.0062, changePercent: 0.36, lastUpdate: new Date().toISOString() },
 ];
 
+// ============================================================================
+// EXOTIC PAIR DECOMPOSITION LOGIC:
+// When a customer trades a non-USD pair (e.g., JPY/SGD):
+// 1. Break down into two USD legs
+// 2. First leg: Convert base currency to/from USD
+// 3. Second leg: Convert USD to/from quote currency
+// 4. This creates positions in BOTH currencies
+// 5. The intermediate USD exposure is reflected in both legs
+// ============================================================================
+
 export const mockPositions: Position[] = [
   {
     id: 'POS-0001',
@@ -22,25 +32,91 @@ export const mockPositions: Position[] = [
     realizedPnL: 5200,
     status: 'Open',
     trades: [
+      // Standard USD/SGD trade
       {
         id: 'TRD-0001',
         tradeDate: new Date(Date.now() - 86400000).toISOString(),
         customerOrder: 'CUST-001',
         originalPair: 'USD/SGD',
         originalAmount: 1500000,
+        isExoticPair: false,
         usdLegs: [
-          { pair: 'USDSGD', amount: 1500000, rate: 1.3400, usdEquivalent: 1500000 }
+          { pair: 'USDSGD', amount: 1500000, rate: 1.3400, usdEquivalent: 1500000, legType: 'Buy Leg' }
         ]
       },
+      // EUR/SGD - Exotic pair example
       {
         id: 'TRD-0002',
         tradeDate: new Date(Date.now() - 172800000).toISOString(),
         customerOrder: 'CUST-005',
         originalPair: 'EUR/SGD',
         originalAmount: 1000000,
+        isExoticPair: true,
+        decompositionReason: 'Exotic pair - USD routing required',
+        netUsdExposure: 1085000,
         usdLegs: [
-          { pair: 'EURUSD', amount: 1000000, rate: 1.0850, usdEquivalent: 1085000 },
-          { pair: 'USDSGD', amount: 1085000, rate: 1.3380, usdEquivalent: 1000000 }
+          { pair: 'EURUSD', amount: 1000000, rate: 1.0850, usdEquivalent: 1085000, legType: 'Sell Leg' },
+          { pair: 'USDSGD', amount: 1085000, rate: 1.3380, usdEquivalent: 1000000, legType: 'Buy Leg' }
+        ]
+      },
+      // JPY/SGD - Customer selling JPY, buying SGD
+      {
+        id: 'TRD-0008',
+        tradeDate: new Date(Date.now() - 259200000).toISOString(),
+        customerOrder: 'CUST-048',
+        originalPair: 'JPY/SGD',
+        originalAmount: 15000000, // 15M JPY
+        isExoticPair: true,
+        decompositionReason: 'Exotic pair - USD routing required',
+        netUsdExposure: 100334,
+        usdLegs: [
+          { pair: 'USDJPY', amount: -15000000, rate: 149.50, usdEquivalent: 100334, legType: 'Sell Leg' },
+          { pair: 'USDSGD', amount: 100334, rate: 1.3385, usdEquivalent: 100334, legType: 'Buy Leg' }
+        ]
+      },
+      // AUD/SGD - Customer selling AUD, buying SGD
+      {
+        id: 'TRD-0009',
+        tradeDate: new Date(Date.now() - 345600000).toISOString(),
+        customerOrder: 'CUST-052',
+        originalPair: 'AUD/SGD',
+        originalAmount: 500000, // 500K AUD
+        isExoticPair: true,
+        decompositionReason: 'Exotic pair - USD routing required',
+        netUsdExposure: 329750,
+        usdLegs: [
+          { pair: 'AUDUSD', amount: 500000, rate: 0.6595, usdEquivalent: 329750, legType: 'Sell Leg' },
+          { pair: 'USDSGD', amount: 329750, rate: 1.3390, usdEquivalent: 329750, legType: 'Buy Leg' }
+        ]
+      },
+      // GBP/SGD - Customer buying GBP, selling SGD (negative amount)
+      {
+        id: 'TRD-0010',
+        tradeDate: new Date(Date.now() - 432000000).toISOString(),
+        customerOrder: 'CUST-061',
+        originalPair: 'GBP/SGD',
+        originalAmount: -300000, // Selling 300K GBP (negative)
+        isExoticPair: true,
+        decompositionReason: 'Exotic pair - USD routing required',
+        netUsdExposure: -381300,
+        usdLegs: [
+          { pair: 'GBPUSD', amount: -300000, rate: 1.2710, usdEquivalent: -381300, legType: 'Buy Leg' },
+          { pair: 'USDSGD', amount: -381300, rate: 1.3395, usdEquivalent: -381300, legType: 'Sell Leg' }
+        ]
+      },
+      // CNY/SGD - Customer selling CNY, buying SGD
+      {
+        id: 'TRD-0011',
+        tradeDate: new Date(Date.now() - 518400000).toISOString(),
+        customerOrder: 'CUST-073',
+        originalPair: 'CNY/SGD',
+        originalAmount: 3000000, // 3M CNY
+        isExoticPair: true,
+        decompositionReason: 'Exotic pair - USD routing required',
+        netUsdExposure: 414079,
+        usdLegs: [
+          { pair: 'USDCNY', amount: -3000000, rate: 7.2450, usdEquivalent: 414079, legType: 'Sell Leg' },
+          { pair: 'USDSGD', amount: 414079, rate: 1.3400, usdEquivalent: 414079, legType: 'Buy Leg' }
         ]
       }
     ]
@@ -95,11 +171,11 @@ export const mockPositions: Position[] = [
     id: 'POS-0004',
     currency: 'AUD',
     liquidityProvider: 'DBS',
-    netPosition: -950000,
+    netPosition: -450000, // Updated from exotic AUD/SGD trade
     currentRate: 0.6582,
-    mtmValue: -625290,
-    unrealizedPnL: 3610,
-    realizedPnL: -1800,
+    mtmValue: -296190,
+    unrealizedPnL: 1850,
+    realizedPnL: -900,
     status: 'Open',
     trades: [
       {
@@ -108,8 +184,24 @@ export const mockPositions: Position[] = [
         customerOrder: 'CUST-024',
         originalPair: 'AUD/USD',
         originalAmount: -950000,
+        isExoticPair: false,
         usdLegs: [
-          { pair: 'AUDUSD', amount: -950000, rate: 0.6620, usdEquivalent: -628900 }
+          { pair: 'AUDUSD', amount: -950000, rate: 0.6620, usdEquivalent: -628900, legType: 'Sell Leg' }
+        ]
+      },
+      // Corresponding AUD/SGD trade (creates positive AUD position)
+      {
+        id: 'TRD-0009-AUD',
+        tradeDate: new Date(Date.now() - 345600000).toISOString(),
+        customerOrder: 'CUST-052',
+        originalPair: 'AUD/SGD',
+        originalAmount: 500000, // Selling 500K AUD
+        isExoticPair: true,
+        decompositionReason: 'Exotic pair - USD routing required',
+        netUsdExposure: 329750,
+        usdLegs: [
+          { pair: 'AUDUSD', amount: 500000, rate: 0.6595, usdEquivalent: 329750, legType: 'Sell Leg' },
+          { pair: 'USDSGD', amount: 329750, rate: 1.3390, usdEquivalent: 329750, legType: 'Buy Leg' }
         ]
       }
     ]
@@ -118,11 +210,11 @@ export const mockPositions: Position[] = [
     id: 'POS-0005',
     currency: 'JPY',
     liquidityProvider: 'UOB',
-    netPosition: 3200000,
+    netPosition: -11800000, // Negative from JPY/SGD exotic trade
     currentRate: 149.27,
-    mtmValue: 21435,
-    unrealizedPnL: 1504,
-    realizedPnL: 8900,
+    mtmValue: -79034,
+    unrealizedPnL: -1204,
+    realizedPnL: 2100,
     status: 'Open',
     trades: [
       {
@@ -131,8 +223,24 @@ export const mockPositions: Position[] = [
         customerOrder: 'CUST-031',
         originalPair: 'USD/JPY',
         originalAmount: 3200000,
+        isExoticPair: false,
         usdLegs: [
-          { pair: 'USDJPY', amount: 3200000, rate: 148.80, usdEquivalent: 21505 }
+          { pair: 'USDJPY', amount: 3200000, rate: 148.80, usdEquivalent: 21505, legType: 'Buy Leg' }
+        ]
+      },
+      // Corresponding JPY/SGD trade (creates negative JPY position)
+      {
+        id: 'TRD-0008-JPY',
+        tradeDate: new Date(Date.now() - 259200000).toISOString(),
+        customerOrder: 'CUST-048',
+        originalPair: 'JPY/SGD',
+        originalAmount: -15000000, // Selling 15M JPY
+        isExoticPair: true,
+        decompositionReason: 'Exotic pair - USD routing required',
+        netUsdExposure: -100334,
+        usdLegs: [
+          { pair: 'USDJPY', amount: -15000000, rate: 149.50, usdEquivalent: -100334, legType: 'Sell Leg' },
+          { pair: 'USDSGD', amount: 100334, rate: 1.3385, usdEquivalent: 100334, legType: 'Buy Leg' }
         ]
       }
     ]
@@ -154,9 +262,40 @@ export const mockPositions: Position[] = [
         customerOrder: 'CUST-042',
         originalPair: 'MYR/HKD',
         originalAmount: 4500000,
+        isExoticPair: true,
+        decompositionReason: 'Exotic pair - USD routing required',
+        netUsdExposure: 1011236,
         usdLegs: [
-          { pair: 'USDMYR', amount: 4500000, rate: 4.4500, usdEquivalent: 1011236 },
-          { pair: 'USDHKD', amount: -1011236, rate: 7.8200, usdEquivalent: -4500000 }
+          { pair: 'USDMYR', amount: 4500000, rate: 4.4500, usdEquivalent: 1011236, legType: 'Buy Leg' },
+          { pair: 'USDHKD', amount: -1011236, rate: 7.8200, usdEquivalent: -1011236, legType: 'Sell Leg' }
+        ]
+      }
+    ]
+  },
+  // New CNY position from exotic CNY/SGD trade
+  {
+    id: 'POS-0007',
+    currency: 'CNY',
+    liquidityProvider: 'HSBC',
+    netPosition: -3000000, // Negative from selling CNY
+    currentRate: 7.2450,
+    mtmValue: -414079,
+    unrealizedPnL: -2100,
+    realizedPnL: 1200,
+    status: 'Open',
+    trades: [
+      {
+        id: 'TRD-0011-CNY',
+        tradeDate: new Date(Date.now() - 518400000).toISOString(),
+        customerOrder: 'CUST-073',
+        originalPair: 'CNY/SGD',
+        originalAmount: -3000000, // Selling 3M CNY
+        isExoticPair: true,
+        decompositionReason: 'Exotic pair - USD routing required',
+        netUsdExposure: -414079,
+        usdLegs: [
+          { pair: 'USDCNY', amount: -3000000, rate: 7.2450, usdEquivalent: -414079, legType: 'Sell Leg' },
+          { pair: 'USDSGD', amount: 414079, rate: 1.3400, usdEquivalent: 414079, legType: 'Buy Leg' }
         ]
       }
     ]

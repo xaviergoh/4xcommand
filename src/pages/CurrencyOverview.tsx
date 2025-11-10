@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, ChevronDown, ChevronRight } from "lucide-react";
+import { ArrowLeft, ChevronDown, ChevronRight, ArrowRight } from "lucide-react";
 import { mockPositions } from "@/data/mockData";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -70,6 +70,27 @@ export default function CurrencyOverview() {
     );
   }, [currencyPositions]);
 
+  // Calculate exotic trade metrics
+  const exoticMetrics = useMemo(() => {
+    const exoticTrades = allTrades.filter(t => t.isExoticPair);
+    const totalExoticTrades = exoticTrades.length;
+    const usdRoutingVolume = exoticTrades.reduce((sum, t) => sum + Math.abs(t.netUsdExposure || 0), 0);
+    const decomposedLegs = exoticTrades.reduce((sum, t) => sum + t.usdLegs.length, 0);
+    const crossCurrencies = new Set(
+      exoticTrades.flatMap(t => {
+        const [base, quote] = t.originalPair.split('/');
+        return [base, quote].filter(c => c !== currency);
+      })
+    );
+
+    return {
+      totalExoticTrades,
+      usdRoutingVolume,
+      decomposedLegs,
+      crossCurrencies: Array.from(crossCurrencies),
+    };
+  }, [allTrades, currency]);
+
   const paginatedTrades = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
@@ -127,6 +148,42 @@ export default function CurrencyOverview() {
           <p className="text-muted-foreground">Detailed position breakdown and underlying transactions</p>
         </div>
       </div>
+
+      {/* Exotic Trades Summary */}
+      {exoticMetrics.totalExoticTrades > 0 && (
+        <Card className="bg-primary/5 border-primary/20">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Badge variant="secondary" className="bg-primary/10">Exotic Trades</Badge>
+              USD Decomposition Summary
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div>
+                <p className="text-sm text-muted-foreground">Total Exotic Trades</p>
+                <p className="text-2xl font-bold">{exoticMetrics.totalExoticTrades}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">USD Routing Volume</p>
+                <p className="text-2xl font-bold">USD {formatCurrency(exoticMetrics.usdRoutingVolume)}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Decomposed Legs</p>
+                <p className="text-2xl font-bold">{exoticMetrics.decomposedLegs}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Cross-Currency Exposure</p>
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {exoticMetrics.crossCurrencies.map(ccy => (
+                    <Badge key={ccy} variant="outline" className="text-xs">{ccy}</Badge>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Total Balances Section */}
       <Card>
@@ -263,7 +320,23 @@ export default function CurrencyOverview() {
                         {new Date(trade.tradeDate).toLocaleDateString()} {new Date(trade.tradeDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </TableCell>
                       <TableCell>{trade.customerOrder}</TableCell>
-                      <TableCell className="font-semibold">{trade.originalPair}</TableCell>
+                      <TableCell className="font-semibold">
+                        <div className="flex items-center gap-2">
+                          {trade.originalPair}
+                          {trade.isExoticPair && (
+                            <Badge variant="secondary" className="text-xs bg-primary/10">Exotic</Badge>
+                          )}
+                        </div>
+                        {trade.isExoticPair && trade.originalPair && (
+                          <div className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+                            {trade.originalPair.split('/')[0]} 
+                            <ArrowRight className="h-3 w-3" />
+                            USD
+                            <ArrowRight className="h-3 w-3" />
+                            {trade.originalPair.split('/')[1]}
+                          </div>
+                        )}
+                      </TableCell>
                       <TableCell className="font-mono text-red-600">{sellAmount}</TableCell>
                       <TableCell className="font-mono text-green-600">{buyAmount}</TableCell>
                       <TableCell className="font-mono">{trade.usdLegs[0]?.rate.toFixed(4) || 'N/A'}</TableCell>
@@ -273,11 +346,33 @@ export default function CurrencyOverview() {
                     </TableRow>
                     {isExpanded && (
                       <TableRow key={`${trade.id}-details`}>
-                        <TableCell colSpan={8} className="bg-muted/30 p-0">
-                          <div className="p-4">
+                        <TableCell colSpan={9} className="bg-muted/30 p-0">
+                          <div className="p-4 space-y-4">
+                            {/* Exotic Trade Info */}
+                            {trade.isExoticPair && (
+                              <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 space-y-2">
+                                <div className="flex items-center gap-2">
+                                  <Badge variant="secondary" className="bg-primary/10">Exotic Pair Decomposition</Badge>
+                                </div>
+                                <div className="grid grid-cols-2 gap-4 text-sm">
+                                  <div>
+                                    <span className="text-muted-foreground">Reason:</span>
+                                    <p className="font-medium">{trade.decompositionReason}</p>
+                                  </div>
+                                  <div>
+                                    <span className="text-muted-foreground">Net USD Exposure:</span>
+                                    <p className="font-mono font-bold text-lg">
+                                      USD {formatCurrency(Math.abs(trade.netUsdExposure || 0))}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                            
                             <Table>
                               <TableHeader>
                                 <TableRow>
+                                  <TableHead>Leg Type</TableHead>
                                   <TableHead>Currency Pair</TableHead>
                                   <TableHead>Rate</TableHead>
                                   <TableHead>{trade.usdLegs[0] ? (trade.usdLegs[0].pair.startsWith('USD') ? 'USD' : trade.usdLegs[0].pair.substring(0, 3)) : 'Base'} Position</TableHead>
@@ -310,6 +405,13 @@ export default function CurrencyOverview() {
 
                                   return (
                                     <TableRow key={idx}>
+                                      <TableCell>
+                                        {leg.legType && (
+                                          <Badge variant="outline" className="text-xs">
+                                            {leg.legType}
+                                          </Badge>
+                                        )}
+                                      </TableCell>
                                       <TableCell className="font-medium">{leg.pair}</TableCell>
                                       <TableCell className="font-mono">{leg.rate.toFixed(4)}</TableCell>
                                       <TableCell className={`font-semibold ${basePosition > 0 ? 'text-green-600' : basePosition < 0 ? 'text-red-600' : ''}`}>
