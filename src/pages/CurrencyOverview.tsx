@@ -381,8 +381,8 @@ export default function CurrencyOverview() {
                                   <TableHead>Leg Type</TableHead>
                                   <TableHead>Currency Pair</TableHead>
                                   <TableHead>Rate</TableHead>
-                                  <TableHead>{trade.usdLegs[0] ? (trade.usdLegs[0].pair.startsWith('USD') ? 'USD' : trade.usdLegs[0].pair.substring(0, 3)) : 'Base'} Position</TableHead>
-                                  <TableHead>{trade.usdLegs[0] ? (trade.usdLegs[0].pair.startsWith('USD') ? trade.usdLegs[0].pair.substring(3) : 'USD') : 'Quote'} Position</TableHead>
+                                  <TableHead>Base Position</TableHead>
+                                  <TableHead>Quote Position</TableHead>
                                 </TableRow>
                               </TableHeader>
                               <TableBody>
@@ -393,9 +393,10 @@ export default function CurrencyOverview() {
                                     ? ['USD', leg.pair.substring(3)]
                                     : [leg.pair.substring(0, 3), 'USD'];
                                   
-                                  const basePosition = leg.local_position;
-                                  // Calculate actual quote currency position
-                                  const quotePosition = -(leg.local_position * leg.rate);
+                                  // For BASE/QUOTE pairs: base is first currency, quote is second
+                                  // For USD/XXX: USD is base, XXX is quote
+                                  const basePosition = leg.usd_position; // Base currency (USD in USD/XXX pairs)
+                                  const quotePosition = leg.local_position; // Quote currency (local currency in USD/XXX pairs)
                                   
                                   const baseLabel = basePosition > 0 
                                     ? `+${formatCurrency(basePosition)}`
